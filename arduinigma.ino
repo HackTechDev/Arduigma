@@ -8,6 +8,10 @@
 const __FlashStringHelper * LOGOBSF;
 const __FlashStringHelper * LOGOSF;
 
+// Background 
+
+byte BackgroundDensity = 1;
+
 // Touchscreen initialization
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // mega
@@ -223,7 +227,7 @@ void setup() {
   TFT_BL_ON;      // turn on the background light
   Tft.TFTinit();  // init TFT library
    
-  Tft.drawString("Arduigma", 0, 0, 2, WHITE); 
+
    
   // Logo
   
@@ -242,6 +246,10 @@ void setup() {
              "\x07\x03\x19\x99\x99\x99\x0E\x00\x03\xC0\x19\x9F\x99\x90\x3C\x00\x00\xF8\x19\x8F\x19\x01\xF0\x00\x00\x3F\x00\x00\x00\x0F\xC0\x00\x00\x07\xFC\x00"
              "\x03\xFE\x00\x00\x00\x00\xFF\xFF\xFF\xF0\x00\x00\x00\x00\x03\xFF\xFC\x00\x00\x00");
 
+  PaintBackground(0, 0, 0, 0);
+
+  Tft.drawString("Arduigma", 0, 0, 2, WHITE); 
+  
   DrawLogo();
    
   // Keyboard 1st row
@@ -250,9 +258,11 @@ void setup() {
   keyboardLeftBorderRow1st = 15;
   keyboardCirclePosX = 22;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(keyboardRow1st) - 1; letterCounterByLine++) {
-    Tft.drawChar(keyboardRow1st[letterCounterByLine], keyboardLeftBorderRow1st + (letterCounterByLine * 25), keyboardPosY, 2, WHITE);
+
     keyboardCirclePosY = keyboardPosY + 7;
+    Tft.fillCircle(keyboardCirclePosX + (letterCounterByLine * 25), keyboardCirclePosY, keyboardCircleRadius, BLACK);
     Tft.drawCircle(keyboardCirclePosX + (letterCounterByLine * 25), keyboardCirclePosY, keyboardCircleRadius, WHITE);
+    Tft.drawChar(keyboardRow1st[letterCounterByLine], keyboardLeftBorderRow1st + (letterCounterByLine * 25), keyboardPosY, 2, WHITE);
     //Tft.drawRectangle(keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius, keyboardCirclePosY - keyboardCircleRadius, keyboardCircleRadius * 2, keyboardCircleRadius * 2, BLUE);
   }
    
@@ -262,9 +272,11 @@ void setup() {
   keyboardLeftBorderRow2nd = 25;
   keyboardCirclePosX = 32;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(keyboardRow2nd) - 1; letterCounterByLine++) {
-    Tft.drawChar(keyboardRow2nd[letterCounterByLine], keyboardLeftBorderRow2nd + (letterCounterByLine * 25), keyboardPosY, 2, WHITE);
+
     keyboardCirclePosY = keyboardPosY + 7;
+    Tft.fillCircle(keyboardCirclePosX + (letterCounterByLine * 25), keyboardCirclePosY, keyboardCircleRadius, BLACK);    
     Tft.drawCircle(keyboardCirclePosX + (letterCounterByLine * 25), keyboardCirclePosY, keyboardCircleRadius, WHITE);
+    Tft.drawChar(keyboardRow2nd[letterCounterByLine], keyboardLeftBorderRow2nd + (letterCounterByLine * 25), keyboardPosY, 2, WHITE);    
     //Tft.drawRectangle(keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius, keyboardCirclePosY - keyboardCircleRadius, keyboardCircleRadius * 2, keyboardCircleRadius * 2, BLUE);
   } 
    
@@ -275,9 +287,10 @@ void setup() {
   keyboardLeftBorderRow1st = 15;
   keyboardCirclePosX = 22;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(keyboardRow3rd) - 1; letterCounterByLine++) {
-    Tft.drawChar(keyboardRow3rd[letterCounterByLine], keyboardLeftBorderRow1st + (letterCounterByLine * 25), keyboardPosY, 2, WHITE);
     keyboardCirclePosY = keyboardPosY + 7;
+    Tft.fillCircle(keyboardCirclePosX + (letterCounterByLine * 25), keyboardCirclePosY, keyboardCircleRadius, BLACK);    
     Tft.drawCircle(keyboardCirclePosX + (letterCounterByLine * 25), keyboardCirclePosY, keyboardCircleRadius, WHITE);
+    Tft.drawChar(keyboardRow3rd[letterCounterByLine], keyboardLeftBorderRow1st + (letterCounterByLine * 25), keyboardPosY, 2, WHITE);
     //Tft.drawRectangle(keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius, keyboardCirclePosY - keyboardCircleRadius, keyboardCircleRadius * 2, keyboardCircleRadius * 2, BLUE);
   }
 
@@ -328,7 +341,7 @@ void loop() {
         if (EnigmaData.SerialFunction == 2)
         {
          Serial.print(EncodedKey);
-         Tft.fillRectangle(0, 60, 200, 30, BLACK);    
+         Tft.fillRectangle(0, 60, 240, 20, BLACK);    
          Tft.drawString("Encode = ", 10, 60, 2, WHITE);
  
          char charTemp[1];
@@ -371,7 +384,7 @@ char detectButtonLetter() {
           p.x < ((keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius) + keyboardLetterSquare)  && 
           p.y < ((keyboardCirclePosY - keyboardCircleRadius + touchDeltaY) + keyboardLetterSquare)
          ) {         
-         Tft.fillRectangle(0, 30, 200, 30, BLACK); 
+         Tft.fillRectangle(0, 30, 240, 30, BLACK); 
          Tft.drawString("Decode = ", 10, 30, 2, WHITE);
          
          // Tricky : Concat 1 string and 1 char
@@ -401,7 +414,7 @@ char detectButtonLetter() {
           p.x < ((keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius) + keyboardLetterSquare)  && 
           p.y < ((keyboardCirclePosY - keyboardCircleRadius + touchDeltaY) + keyboardLetterSquare)
          ) {         
-         Tft.fillRectangle(0, 30, 200, 30, BLACK); 
+         Tft.fillRectangle(0, 30, 240, 30, BLACK); 
          Tft.drawString("Decode = ", 10, 30, 2, WHITE);
 
          
@@ -429,7 +442,7 @@ char detectButtonLetter() {
           p.x < ((keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius) + keyboardLetterSquare)  && 
           p.y < ((keyboardCirclePosY - keyboardCircleRadius + touchDeltaY) + keyboardLetterSquare)
          ) {         
-         Tft.fillRectangle(0, 30, 200, 30, BLACK); 
+         Tft.fillRectangle(0, 30, 240, 30, BLACK); 
          Tft.drawString("Decode = ", 10, 30, 2, WHITE);
 
          
@@ -930,5 +943,59 @@ char EncodeKey(char key)
   SerialMonitor(k);
 
   return k;
+}
+
+// Background 
+
+void PaintBackground(int x1, int y1, int x2, int y2)
+{
+  if (BackgroundDensity == 0)
+  {
+    return;
+  }
+
+  int X1 = x1;
+  int Y1 = y1;
+  int X2 = x2;
+  int Y2 = y2;
+
+  int c1 = 6339;
+  int c2 = 8484;
+  int c3 = 14823;
+
+  if ((x1 == 0) && (y1 == 0) && (x2 == 0) && (y2 == 0))
+  {
+    X1 = 0;
+    Y1 = 0;
+    X2 = 239;
+    Y2 = 302;
+  }
+
+  for (int j = Y1; j < Y2 + 1; j += BackgroundDensity)
+  {
+    for (int i = X1; i < X2 + 1; i += BackgroundDensity)
+    {
+      int c;
+      int r;
+      r = random(100);
+
+      if (r < 30)
+      {
+        c = c1;
+      }
+
+      if ((r > 29) && (r < 60))
+      {
+        c = c2;
+      }
+
+      if (r > 59)
+      {
+        c = c3;
+      }
+
+      Tft.setPixel(i, j, c);
+    }
+  }
 }
 
