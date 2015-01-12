@@ -1,15 +1,14 @@
-/*  draw text's APP
-    drawChar(INT8U ascii,INT16U poX, INT16U poY,INT16U size, INT16U fgcolor);
-    drawString(char *string,INT16U poX, INT16U poY,INT16U size,INT16U fgcolor);
-*/
-
 #include <stdint.h>
 #include <TFTv2.h>
 #include <SPI.h>
 #include <SeeedTouchScreen.h> 
 
-// Touchscreen initialization
+// Logo
 
+const __FlashStringHelper * LOGOBSF;
+const __FlashStringHelper * LOGOSF;
+
+// Touchscreen initialization
 
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) // mega
 #define YP A2   // must be an analog pin, use "An" notation!
@@ -73,6 +72,8 @@ int keyboardLetterSquare = keyboardCircleRadius * 2;
 
 char message[10];
 
+char messageChar;
+
 void setup() {
   Serial.begin(9600);      // open the serial port at 9600 bps:    
    
@@ -81,7 +82,24 @@ void setup() {
    
   Tft.drawString("Arduigma", 0, 0, 2, WHITE); 
    
+  // Logo
+  
+  
+  LOGOBSF = F("\x00\x00\x03\xFF\xFC\x00\x00\x00\x00\x00\xFF\xFF\xFF\xF0\x00\x00\x00\x07\xFF\xFF\xFF\xFE\x00\x00\x00\x3F\xFF\xFF\xFF\xFF\xC0\x00\x00\xFF\xFF\xFF"
+              "\xFF\xFF\xF0\x00\x03\xFF\xFF\xFF\xFF\xFF\xFC\x00\x07\xFF\xFF\xFF\xFF\xFF\xFE\x00\x0F\xFF\xFF\xFF\xFF\xFF\xFF\x00\x1F\xFF\xFF\xFF\xFF\xFF\xFF\x80"
+              "\x3F\xFF\xFF\xFF\xFF\xFF\xFF\xC0\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xE0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xF0\xFF\xFF\xFF\xFF\xFF\xFF\xFF\xF0\xFF\xFF\xFF\xFF"
+              "\xFF\xFF\xFF\xF0\x7F\xFF\xFF\xFF\xFF\xFF\xFF\xE0\x3F\xFF\xFF\xFF\xFF\xFF\xFF\xC0\x1F\xFF\xFF\xFF\xFF\xFF\xFF\x80\x0F\xFF\xFF\xFF\xFF\xFF\xFF\x00"
+              "\x07\xFF\xFF\xFF\xFF\xFF\xFE\x00\x03\xFF\xFF\xFF\xFF\xFF\xFC\x00\x00\xFF\xFF\xFF\xFF\xFF\xF0\x00\x00\x3F\xFF\xFF\xFF\xFF\xC0\x00\x00\x07\xFF\xFF"
+              "\xFF\xFE\x00\x00\x00\x00\xFF\xFF\xFF\xF0\x00\x00\x00\x00\x03\xFF\xFC\x00\x00\x00");
 
+  LOGOSF = F("\x00\x00\x03\xFF\xFC\x00\x00\x00\x00\x00\xFF\xFF\xFF\xF0\x00\x00\x00\x07\xFC\x00\x03\xFE\x00\x00\x00\x3F\x00\x00\x00\x0F\xC0\x00\x00\xF8\x01\x8F"
+             "\x1F\x01\xF0\x00\x03\xC0\xF9\x9F\x9F\xF0\x3C\x00\x07\x03\xF9\x99\x99\xF8\x0E\x00\x0C\x33\x19\x98\x19\x99\x83\x00\x19\xF3\x19\x98\x19\x99\xE1\x80"
+             "\x39\x83\x19\x98\x19\x99\xF9\xC0\x79\x83\x19\x98\x19\x99\x99\xE0\xDD\xE3\x19\x9B\x99\x99\x9B\xB0\x8D\xE3\x19\x9B\x99\x99\xFB\x10\xDD\x83\x19\x99"
+             "\x99\x99\xFB\xB0\x79\x83\x19\x99\x99\x99\x99\xE0\x39\xC3\x19\x99\x99\x99\x99\xC0\x19\xF3\x19\x99\x99\x99\x91\x80\x0C\x33\x19\x99\x99\x99\x83\x00"
+             "\x07\x03\x19\x99\x99\x99\x0E\x00\x03\xC0\x19\x9F\x99\x90\x3C\x00\x00\xF8\x19\x8F\x19\x01\xF0\x00\x00\x3F\x00\x00\x00\x0F\xC0\x00\x00\x07\xFC\x00"
+             "\x03\xFE\x00\x00\x00\x00\xFF\xFF\xFF\xF0\x00\x00\x00\x00\x03\xFF\xFC\x00\x00\x00");
+
+  DrawLogo();
    
   // Keyboard 1st row
   
@@ -124,12 +142,17 @@ void setup() {
 }
 
 void loop() {
-  detectButtonLetter() ;
- 
+  
+  messageChar = detectButtonLetter();
+  
+  if(messageChar != ' ' ) {
+    Serial.println(messageChar);
+  }
+  
   delay(100);  
 }
 
-void detectButtonLetter() {
+char detectButtonLetter() {
 
   Point p = ts.getPoint();
 
@@ -164,6 +187,8 @@ void detectButtonLetter() {
          strcat(message, charTemp);
          
          Tft.drawString(message, 110, 30, 2, WHITE);
+         
+         return keyboardRow1st[letterCounterByLine];
          }
     }
 
@@ -192,6 +217,8 @@ void detectButtonLetter() {
          strcat(message, charTemp);
          
          Tft.drawString(message, 110, 30, 2, WHITE);   
+         
+         return keyboardRow2nd[letterCounterByLine];
          }
     }
 
@@ -218,13 +245,53 @@ void detectButtonLetter() {
          strcat(message, charTemp);
          
          Tft.drawString(message, 110, 30, 2, WHITE);
+         
+         return keyboardRow3rd[letterCounterByLine];
          }
-    }
-
-
-
-    
-    
+    }  
   }
-
+  
+  return ' ';  
 }
+
+
+
+void DrawBits(int bX, int bY, byte rX, byte rY, byte px, int color)
+{
+  int x, y;
+
+  x = bX + rX * 8;
+  y = bY + rY;
+
+  for (byte i = 0; i < 8; i++)
+  {
+    if ((px >> (7 - i)) & 0x01)
+    {
+      Tft.setPixel(x + i, y, color);
+    }
+  }
+}
+
+void DrawLogo()
+{
+  const char PROGMEM *logobptr = (const char PROGMEM *)LOGOBSF;
+  const char PROGMEM *logoptr = (const char PROGMEM *)LOGOSF;
+  byte px;
+  int ndx = 0;
+
+  for (byte y = 0; y < 25; y++)
+  {
+    for (byte x = 0; x < 8; x++)
+    {
+      px = pgm_read_byte(logobptr + ndx);
+      DrawBits(175, 5, x, y, px, BLACK);
+
+      px = pgm_read_byte(logoptr + ndx);
+      DrawBits(175, 5, x, y, px, GRAY1);
+
+      ndx++;
+    }
+  }
+  return;
+}
+
