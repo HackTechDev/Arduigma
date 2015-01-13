@@ -1,3 +1,9 @@
+/*
+Arduino + Enigma = Arduigma
+
+Enigma algorithm: http://arduinoenigma.blogspot.fr/2014/10/source-code-for-implementation-of.html
+*/
+
 #include <stdint.h>
 #include <TFTv2.h>
 #include <SPI.h>
@@ -51,6 +57,23 @@ byte BackgroundDensity = 1;
 // The 2.8" TFT Touch shield has 300 ohms across the X plate
 TouchScreen ts = TouchScreen(XP, YP, XM, YM);
 
+// Lampboard
+char lampboardRow1st[] = "QWERTZUIO"; // 9
+char lampboardRow2nd[] = "ASDFGHJK"; // 8
+char lampboardRow3rd[] = "PYXCVBNML"; // 9
+
+
+int lampboardLeftBorderRow1st;
+int lampboardLeftBorderRow2nd;
+int lampboardPosY;
+
+int lampboardCirclePosX;
+int lampboardCirclePosY;
+int lampboardCircleRadius = 11; 
+int lampboardLetterSquare = lampboardCircleRadius * 2;
+
+
+// Keyboard
 char keyboardRow1st[] = "QWERTZUIO"; // 9
 char keyboardRow2nd[] = "ASDFGHJK"; // 8
 char keyboardRow3rd[] = "PYXCVBNML"; // 9
@@ -246,11 +269,63 @@ void setup() {
              "\x07\x03\x19\x99\x99\x99\x0E\x00\x03\xC0\x19\x9F\x99\x90\x3C\x00\x00\xF8\x19\x8F\x19\x01\xF0\x00\x00\x3F\x00\x00\x00\x0F\xC0\x00\x00\x07\xFC\x00"
              "\x03\xFE\x00\x00\x00\x00\xFF\xFF\xFF\xF0\x00\x00\x00\x00\x03\xFF\xFC\x00\x00\x00");
 
-  PaintBackground(0, 0, 0, 0);
+  //PaintBackground(0, 0, 0, 0);
 
   Tft.drawString("Arduigma", 0, 0, 2, WHITE); 
   
   DrawLogo();
+  
+  
+    Tft.drawLine(0, 120, 240, 120, WHITE);
+    
+  // Lampboard 1st row
+  
+    
+  lampboardPosY = 135;
+  lampboardLeftBorderRow1st = 15;
+  lampboardCirclePosX = 22;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow1st) - 1; letterCounterByLine++) {
+
+    lampboardCirclePosY = lampboardPosY + 7;
+    Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, BLACK);
+    Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+    Tft.drawChar(lampboardRow1st[letterCounterByLine], lampboardLeftBorderRow1st + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);
+    //Tft.drawRectangle(lampboardCirclePosX + (letterCounterByLine * 25) - lampboardCircleRadius, lampboardCirclePosY - lampboardCircleRadius, lampboardCircleRadius * 2, lampboardCircleRadius * 2, BLUE);
+  }
+  
+  
+   // Lampboard 2nd row
+  
+  lampboardPosY = lampboardPosY + 25;
+  lampboardLeftBorderRow2nd = 25;
+  lampboardCirclePosX = 32;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow2nd) - 1; letterCounterByLine++) {
+
+    lampboardCirclePosY = lampboardPosY + 7;
+    Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, BLACK);    
+    Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+    Tft.drawChar(lampboardRow2nd[letterCounterByLine], lampboardLeftBorderRow2nd + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);    
+    //Tft.drawRectangle(keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius, keyboardCirclePosY - keyboardCircleRadius, keyboardCircleRadius * 2, keyboardCircleRadius * 2, BLUE);
+  } 
+   
+  
+  // Lampboard 3rd row
+  
+  lampboardPosY = lampboardPosY + 25;
+  lampboardLeftBorderRow1st = 15;
+  lampboardCirclePosX = 22;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow3rd) - 1; letterCounterByLine++) {
+    lampboardCirclePosY = lampboardPosY + 7;
+    Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, BLACK);    
+    Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+    Tft.drawChar(lampboardRow3rd[letterCounterByLine], lampboardLeftBorderRow1st + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);
+    //Tft.drawRectangle(keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius, keyboardCirclePosY - keyboardCircleRadius, keyboardCircleRadius * 2, keyboardCircleRadius * 2, BLUE);
+  } 
+  
+  
+  Tft.drawLine(0, 215, 240, 215, WHITE);
+  
+
    
   // Keyboard 1st row
   
@@ -348,7 +423,9 @@ void loop() {
          sprintf(charTemp, "%c", EncodedKey);
          strcat(messageDecode, charTemp);
          
-         Tft.drawString(messageDecode, 110, 60, 2, WHITE);   
+         Tft.drawString(messageDecode, 110, 60, 2, WHITE);  
+        
+        lampOn(EncodedKey); 
         }
       }
     }    
@@ -358,6 +435,108 @@ void loop() {
   
   delay(100);  
 }
+
+
+void lampOn(char letter) {
+  //Serial.print(letter);
+  lampOff();
+    
+  // Lampboard 1st row
+  
+    
+  lampboardPosY = 135;
+  lampboardLeftBorderRow1st = 15;
+  lampboardCirclePosX = 22;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow1st) - 1; letterCounterByLine++) {
+
+    lampboardCirclePosY = lampboardPosY + 7;
+    
+    if(lampboardRow1st[letterCounterByLine] == letter) {
+ 
+      Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, RED);
+      Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+      Tft.drawChar(lampboardRow1st[letterCounterByLine], lampboardLeftBorderRow1st + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);
+    }
+  }
+  
+  
+   // Lampboard 2nd row
+  
+  lampboardPosY = lampboardPosY + 25;
+  lampboardLeftBorderRow2nd = 25;
+  lampboardCirclePosX = 32;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow2nd) - 1; letterCounterByLine++) {
+
+    lampboardCirclePosY = lampboardPosY + 7;
+    if(lampboardRow2nd[letterCounterByLine] == letter) {
+
+      Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, RED);    
+      Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+      Tft.drawChar(lampboardRow2nd[letterCounterByLine], lampboardLeftBorderRow2nd + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);  
+    }  
+  } 
+   
+  
+  // Lampboard 3rd row
+  
+  lampboardPosY = lampboardPosY + 25;
+  lampboardLeftBorderRow1st = 15;
+  lampboardCirclePosX = 22;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow3rd) - 1; letterCounterByLine++) {
+    lampboardCirclePosY = lampboardPosY + 7;
+    if(lampboardRow3rd[letterCounterByLine] == letter) {
+     
+      Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, RED);    
+      Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+      Tft.drawChar(lampboardRow3rd[letterCounterByLine], lampboardLeftBorderRow1st + (letterCounterByLine * 25), lampboardPosY, 2, WHITE); 
+    }
+  } 
+  
+}
+
+// TODO: Do not turn on all the light but only one
+void lampOff() {
+    
+  // Lampboard 1st row
+  
+    
+  lampboardPosY = 135;
+  lampboardLeftBorderRow1st = 15;
+  lampboardCirclePosX = 22;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow1st) - 1; letterCounterByLine++) {
+
+    lampboardCirclePosY = lampboardPosY + 7;
+    Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, BLACK);
+    Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+    Tft.drawChar(lampboardRow1st[letterCounterByLine], lampboardLeftBorderRow1st + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);
+  }
+  
+   // Lampboard 2nd row
+  
+  lampboardPosY = lampboardPosY + 25;
+  lampboardLeftBorderRow2nd = 25;
+  lampboardCirclePosX = 32;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow2nd) - 1; letterCounterByLine++) {
+
+    lampboardCirclePosY = lampboardPosY + 7;
+    Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, BLACK);    
+    Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+    Tft.drawChar(lampboardRow2nd[letterCounterByLine], lampboardLeftBorderRow2nd + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);    
+  } 
+   
+  // Lampboard 3rd row
+  
+  lampboardPosY = lampboardPosY + 25;
+  lampboardLeftBorderRow1st = 15;
+  lampboardCirclePosX = 22;
+  for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow3rd) - 1; letterCounterByLine++) {
+    lampboardCirclePosY = lampboardPosY + 7;
+    Tft.fillCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, BLACK);    
+    Tft.drawCircle(lampboardCirclePosX + (letterCounterByLine * 25), lampboardCirclePosY, lampboardCircleRadius, WHITE);
+    Tft.drawChar(lampboardRow3rd[letterCounterByLine], lampboardLeftBorderRow1st + (letterCounterByLine * 25), lampboardPosY, 2, WHITE);
+  } 
+}
+
 
 char detectButtonLetter() {
 
