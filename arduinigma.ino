@@ -95,6 +95,17 @@ int keyboardCirclePosY;
 int keyboardCircleRadius = 11; 
 int keyboardLetterSquare = keyboardCircleRadius * 2;
 
+
+//
+
+
+int labelLeftMargin = 10;
+int messageLeftMargin = 50;
+
+
+int inputTopMargin = 95;
+int outputTopMargin = inputTopMargin + 20;
+
 char message[10];
 char messageDecode[10];
 
@@ -275,13 +286,23 @@ void setup() {
   
   DrawLogo();
   
+    Tft.drawLine(0, inputTopMargin - 10, 240, inputTopMargin - 10, WHITE);
+    
+
+    Tft.fillRectangle(0, inputTopMargin, 240, 30, BLACK); 
+    Tft.drawString("I = ", labelLeftMargin, inputTopMargin, 2, WHITE);     
   
-    Tft.drawLine(0, 120, 240, 120, WHITE);
+    Tft.fillRectangle(0, outputTopMargin, 240, 15, BLACK);    
+     Tft.drawString("O = ", labelLeftMargin, outputTopMargin, 2, WHITE);
+         
+         
+         
+    Tft.drawLine(0, 135, 240, 135, WHITE);
     
   // Lampboard 1st row
   
     
-  lampboardPosY = 135;
+  lampboardPosY = 150;
   lampboardLeftBorderRow1st = 15;
   lampboardCirclePosX = 22;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow1st) - 1; letterCounterByLine++) {
@@ -323,13 +344,13 @@ void setup() {
   } 
   
   
-  Tft.drawLine(0, 215, 240, 215, WHITE);
+  Tft.drawLine(0, 230, 240, 230, WHITE);
   
 
    
   // Keyboard 1st row
   
-  keyboardPosY = 230;
+  keyboardPosY = 245;
   keyboardLeftBorderRow1st = 15;
   keyboardCirclePosX = 22;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(keyboardRow1st) - 1; letterCounterByLine++) {
@@ -416,14 +437,14 @@ void loop() {
         if (EnigmaData.SerialFunction == 2)
         {
          Serial.print(EncodedKey);
-         Tft.fillRectangle(0, 60, 240, 20, BLACK);    
-         Tft.drawString("Encode = ", 10, 60, 2, WHITE);
+         Tft.fillRectangle(0, outputTopMargin, 240, 15, BLACK);    
+         Tft.drawString("O = ", labelLeftMargin, outputTopMargin, 2, WHITE);
  
          char charTemp[1];
          sprintf(charTemp, "%c", EncodedKey);
          strcat(messageDecode, charTemp);
          
-         Tft.drawString(messageDecode, 110, 60, 2, WHITE);  
+         Tft.drawString(messageDecode, messageLeftMargin, outputTopMargin, 2, WHITE);  
         
         lampOn(EncodedKey); 
         }
@@ -444,7 +465,7 @@ void lampOn(char letter) {
   // Lampboard 1st row
   
     
-  lampboardPosY = 135;
+  lampboardPosY = 150;
   lampboardLeftBorderRow1st = 15;
   lampboardCirclePosX = 22;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow1st) - 1; letterCounterByLine++) {
@@ -500,7 +521,7 @@ void lampOff() {
   // Lampboard 1st row
   
     
-  lampboardPosY = 135;
+  lampboardPosY = 150;
   lampboardLeftBorderRow1st = 15;
   lampboardCirclePosX = 22;
   for (letterCounterByLine = 0; letterCounterByLine < sizeof(lampboardRow1st) - 1; letterCounterByLine++) {
@@ -553,7 +574,7 @@ char detectButtonLetter() {
    
 
     // Test 1st row
-    keyboardPosY = 230;
+    keyboardPosY = 245;
     keyboardLeftBorderRow1st = 15;
     keyboardCirclePosX = 22;    
     keyboardCirclePosY = keyboardPosY + 7;    
@@ -563,15 +584,15 @@ char detectButtonLetter() {
           p.x < ((keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius) + keyboardLetterSquare)  && 
           p.y < ((keyboardCirclePosY - keyboardCircleRadius + touchDeltaY) + keyboardLetterSquare)
          ) {         
-         Tft.fillRectangle(0, 30, 240, 30, BLACK); 
-         Tft.drawString("Decode = ", 10, 30, 2, WHITE);
+         Tft.fillRectangle(0, inputTopMargin, 240, 30, BLACK); 
+         Tft.drawString("I = ", labelLeftMargin, inputTopMargin, 2, WHITE);
          
          // Tricky : Concat 1 string and 1 char
          char charTemp[1];
          sprintf(charTemp, "%c", keyboardRow1st[letterCounterByLine]);
          strcat(message, charTemp);
          
-         Tft.drawString(message, 110, 30, 2, WHITE);
+         Tft.drawString(message, messageLeftMargin, inputTopMargin, 2, WHITE);
          
          return keyboardRow1st[letterCounterByLine];
          }
@@ -593,15 +614,15 @@ char detectButtonLetter() {
           p.x < ((keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius) + keyboardLetterSquare)  && 
           p.y < ((keyboardCirclePosY - keyboardCircleRadius + touchDeltaY) + keyboardLetterSquare)
          ) {         
-         Tft.fillRectangle(0, 30, 240, 30, BLACK); 
-         Tft.drawString("Decode = ", 10, 30, 2, WHITE);
+         Tft.fillRectangle(0, inputTopMargin, 240, 30, BLACK); 
+         Tft.drawString("O = ", labelLeftMargin, inputTopMargin, 2, WHITE);
 
          
          char charTemp[1];
          sprintf(charTemp, "%c", keyboardRow2nd[letterCounterByLine]);
          strcat(message, charTemp);
          
-         Tft.drawString(message, 110, 30, 2, WHITE);   
+         Tft.drawString(message, messageLeftMargin, inputTopMargin, 2, WHITE);   
          
          return keyboardRow2nd[letterCounterByLine];
          }
@@ -621,15 +642,15 @@ char detectButtonLetter() {
           p.x < ((keyboardCirclePosX + (letterCounterByLine * 25) - keyboardCircleRadius) + keyboardLetterSquare)  && 
           p.y < ((keyboardCirclePosY - keyboardCircleRadius + touchDeltaY) + keyboardLetterSquare)
          ) {         
-         Tft.fillRectangle(0, 30, 240, 30, BLACK); 
-         Tft.drawString("Decode = ", 10, 30, 2, WHITE);
+         Tft.fillRectangle(0, inputTopMargin, 240, 30, BLACK); 
+         Tft.drawString("O = ", labelLeftMargin, inputTopMargin, 2, WHITE);
 
          
          char charTemp[1];
          sprintf(charTemp, "%c", keyboardRow3rd[letterCounterByLine]);
          strcat(message, charTemp);
          
-         Tft.drawString(message, 110, 30, 2, WHITE);
+         Tft.drawString(message, messageLeftMargin, inputTopMargin, 2, WHITE);
          
          return keyboardRow3rd[letterCounterByLine];
          }
