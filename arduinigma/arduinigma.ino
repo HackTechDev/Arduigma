@@ -286,6 +286,11 @@ void setup() {
   
   DrawLogo();
   
+  
+     Tft.drawChar('A', 20, 45, 2, WHITE);
+     Tft.drawChar('A', 40, 45, 2, WHITE);
+     Tft.drawChar('A', 60, 45, 2, WHITE);
+  
     Tft.drawLine(0, inputTopMargin - 10, 240, inputTopMargin - 10, WHITE);
     
 
@@ -962,6 +967,8 @@ void SerialMonitor(char k)
         case 11:
           {
             Serial.print(F(">R1>"));
+            Tft.fillRectangle(20, 45, 12, 15, BLACK); 
+            Tft.drawChar(k , 20, 45, 2, WHITE);
             break;
           }
 
@@ -969,6 +976,8 @@ void SerialMonitor(char k)
         case 10:
           {
             Serial.print(F(">R2>"));
+            Tft.fillRectangle(40, 45, 12, 15, BLACK); 
+            Tft.drawChar(k , 40, 45, 2, WHITE);            
             break;
           }
 
@@ -976,6 +985,8 @@ void SerialMonitor(char k)
         case 9:
           {
             Serial.print(F(">R3>"));
+            Tft.fillRectangle(60, 45, 12, 15, BLACK); 
+            Tft.drawChar(k , 60, 45, 2, WHITE);            
             break;
           }
 
