@@ -447,6 +447,7 @@ void loop() {
          Tft.drawString(messageDecode, messageLeftMargin, outputTopMargin, 2, WHITE);  
         
         lampOn(EncodedKey); 
+        ShowRotors();
         }
       }
     }    
@@ -875,8 +876,7 @@ void ShowRotors()
   char k;
   INT16U wheeltype;
 
-  if (EnigmaData.SerialFunction == 1)
-  {
+ 
     Serial.println(F("Rotors:"));
 
     for (byte i = 0; i < 6; i++)
@@ -918,7 +918,7 @@ void ShowRotors()
         Serial.println(F(""));
       }
     }
-  }
+ 
 }
 
 byte SerialMonitorStatus;
@@ -931,8 +931,7 @@ void SerialMonitor(char k)
   }
   else
   {
-    if (EnigmaData.SerialFunction == 1)
-    {
+
       SerialMonitorStatus++;
 
       //skip R4 if a three wheel machine
@@ -997,7 +996,7 @@ void SerialMonitor(char k)
             Serial.println(F(""));
           }
       }
-    }
+    
   }
 }
 
