@@ -106,8 +106,8 @@ int messageLeftMargin = 50;
 int inputTopMargin = 95;
 int outputTopMargin = inputTopMargin + 20;
 
-char message[10];
-char messageDecode[10];
+char message[20];
+char messageDecode[20];
 
 char messageChar;
 
